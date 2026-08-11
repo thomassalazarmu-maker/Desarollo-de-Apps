@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Mercado</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 0 16px;
+    color: #333;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2f4a3c;
+  }
+
+  #itemName, #itemPrice {
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #itemName { width: 40%; }
+  #itemPrice { width: 22%; }
+  #itemQty { width: 18%; }
+
+  #addBtn {
+    padding: 8px 14px;
+    background-color: #2f4a3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  #addBtn:hover { background-color: #3d6350; }
+
+  #list {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+  }
+
+  #list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  p {
+    text-align: right;
+    font-weight: bold;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Lista de Mercado</h1>
+
+<input type="text" id="itemName" placeholder="Producto">
+<input type="number" id="itemQty" placeholder="Cant." min="1" step="1" value="1">
+<input type="number" id="itemPrice" placeholder="Precio" min="0" step="0.01">
+<button id="addBtn">Agregar</button>
+
+<ul id="list"></ul>
+
+<p>Total: $<span id="totalValue">0</span></p>
+
+<script>
+  let nextId = 1;
+  const items = [];
+
+  const listEl = document.getElementById('list');
+  const nameInput = document.getElementById('itemName');
+  const qtyInput = document.getElementById('itemQty');
+  const priceInput = document.getElementById('itemPrice');
+  const totalEl = document.getElementById('totalValue');
+
+  function render() {
+    listEl.innerHTML = '';
+
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.id = 'item-' + item.id;
+
+      const subtotal = item.qty * item.price;
+      li.innerHTML = item.name + ' x' + item.qty + ' - $' + subtotal;
+
+      listEl.appendChild(li);
+    });
+
+    const total = items.reduce((sum, it) => sum + (it.qty * it.price), 0);
+    totalEl.textContent = total;
+  }
+
+  function addItem() {
+    const name = nameInput.value.trim();
+    const qty = parseInt(qtyInput.value);
+    const price = parseFloat(priceInput.value);
+
+    if (!name || isNaN(qty) || qty < 1 || isNaN(price) || price < 0) {
+      return;
+    }
+
+    items.push({ id: nextId++, name: name, qty: qty, price: price });
+
+    nameInput.value = '';
+    qtyInput.value = '1';
+    priceInput.value = '';
+    nameInput.focus();
+
+    render();
+  }
+
+  document.getElementById('addBtn').addEventListener('click', addItem);
+
+  render();
+</script>
+
+</body>
+</html>

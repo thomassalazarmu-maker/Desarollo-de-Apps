@@ -1,0 +1,64 @@
+<div class="contenedor">
+  <h1>Calculadora</h1>
+
+  <div class="calculadora">
+    <div class="campo">
+      <label for="num1">Número 1</label>
+      <input
+        id="num1"
+        type="number"
+        [(ngModel)]="num1"
+        name="num1"
+        placeholder="Ingresa el primer número"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="operacion">Operación</label>
+      <select id="operacion" [(ngModel)]="operacion" name="operacion">
+        <option value="+">Suma (+)</option>
+        <option value="-">Resta (-)</option>
+        <option value="*">Multiplicación (×)</option>
+        <option value="/">División (÷)</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="num2">Número 2</label>
+      <input
+        id="num2"
+        type="number"
+        [(ngModel)]="num2"
+        name="num2"
+        placeholder="Ingresa el segundo número"
+      />
+    </div>
+
+    <div class="botones">
+      <button (click)="calcular()">Calcular</button>
+      <button (click)="limpiarCampos()" class="secundario">Limpiar</button>
+    </div>
+
+    <div class="resultado" *ngIf="resultado !== null">
+      Resultado: <strong>{{ resultado }}</strong>
+    </div>
+  </div>
+
+  <div class="historico">
+    <div class="historico-titulo">
+      <h2>Histórico</h2>
+      <button *ngIf="historico.length > 0" (click)="limpiarHistorico()" class="limpiar-historico">
+        Borrar histórico
+      </button>
+    </div>
+
+    <p *ngIf="historico.length === 0" class="vacio">Aún no hay cálculos realizados.</p>
+
+    <ul *ngIf="historico.length > 0">
+      <li *ngFor="let item of historico">
+        {{ item.num1 }} {{ obtenerSimboloOperacion(item.operacion) }} {{ item.num2 }} = <strong>{{ item.resultado }}</strong>
+        <span class="fecha">{{ item.fecha | date:'short' }}</span>
+      </li>
+    </ul>
+  </div>
+</div>

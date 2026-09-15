@@ -1,64 +1,112 @@
-<div class="contenedor">
-  <h1>Calculadora</h1>
+<ion-app>
+  <ion-header class="app-header" [translucent]="true">
+    <ion-toolbar>
+      <ion-title><span class="marca-icono">+</span> Calcu<span>lab</span></ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" aria-label="Estado de la calculadora"><ion-badge color="success">Lista</ion-badge></ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-  <div class="calculadora">
-    <div class="campo">
-      <label for="num1">Número 1</label>
-      <input
-        id="num1"
-        type="number"
-        [(ngModel)]="num1"
-        name="num1"
-        placeholder="Ingresa el primer número"
-      />
-    </div>
+  <ion-content [fullscreen]="true" class="app-content">
+    <main class="contenedor">
+      <ion-grid class="bienvenida">
+        <ion-row class="ion-align-items-center">
+          <ion-col size="12" sizeMd="8">
+            <ion-text color="success"><p class="eyebrow">Herramienta rápida</p></ion-text>
+            <h1>Haz que los números<br /><em>trabajen para ti.</em></h1>
+            <p class="intro">Resuelve operaciones simples y guarda tus resultados en un solo lugar.</p>
+          </ion-col>
+          <ion-col size="12" sizeMd="4" class="garabato" aria-hidden="true"><ion-text color="medium">∑</ion-text></ion-col>
+        </ion-row>
+      </ion-grid>
 
-    <div class="campo">
-      <label for="operacion">Operación</label>
-      <select id="operacion" [(ngModel)]="operacion" name="operacion">
-        <option value="+">Suma (+)</option>
-        <option value="-">Resta (-)</option>
-        <option value="*">Multiplicación (×)</option>
-        <option value="/">División (÷)</option>
-      </select>
-    </div>
+      <ion-grid class="contenido">
+        <ion-row>
+          <ion-col size="12" sizeLg="8">
+            <ion-card class="calculadora">
+              <ion-card-header>
+                <ion-card-title><ion-text color="success"><p class="eyebrow">Nueva operación</p></ion-text>Construye tu cálculo</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-grid class="formulario">
+                  <ion-row>
+                    <ion-col size="6" sizeMd="4">
+                      <ion-item class="campo" lines="none">
+                        <ion-label position="stacked">Primer número</ion-label>
+                        <ion-input type="number" [(ngModel)]="num1" name="num1" placeholder="0" fill="outline" aria-label="Primer número"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col size="12" sizeMd="4" class="operador-col">
+                      <ion-item class="campo" lines="none">
+                        <ion-label position="stacked">Operación</ion-label>
+                        <ion-select [(ngModel)]="operacion" name="operacion" interface="popover" fill="outline" aria-label="Operación">
+                          <ion-select-option value="+">+ Sumar</ion-select-option>
+                          <ion-select-option value="-">− Restar</ion-select-option>
+                          <ion-select-option value="*">× Multiplicar</ion-select-option>
+                          <ion-select-option value="/">÷ Dividir</ion-select-option>
+                        </ion-select>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col size="6" sizeMd="4">
+                      <ion-item class="campo" lines="none">
+                        <ion-label position="stacked">Segundo número</ion-label>
+                        <ion-input type="number" [(ngModel)]="num2" name="num2" placeholder="0" fill="outline" aria-label="Segundo número"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
 
-    <div class="campo">
-      <label for="num2">Número 2</label>
-      <input
-        id="num2"
-        type="number"
-        [(ngModel)]="num2"
-        name="num2"
-        placeholder="Ingresa el segundo número"
-      />
-    </div>
+                <div class="acciones">
+                  <ion-button expand="block" class="boton-principal" (click)="calcular()">Calcular <span>→</span></ion-button>
+                  <ion-button fill="outline" class="boton-secundario" (click)="limpiarCampos()">Limpiar</ion-button>
+                </div>
 
-    <div class="botones">
-      <button (click)="calcular()">Calcular</button>
-      <button (click)="limpiarCampos()" class="secundario">Limpiar</button>
-    </div>
+                <ion-card class="resultado" [class.resultado-vacio]="resultado === null">
+                  <ion-card-content>
+                    <ion-label class="resultado-label">Resultado</ion-label>
+                    <strong *ngIf="resultado !== null">{{ resultado }}</strong>
+                    <strong *ngIf="resultado === null" class="placeholder-resultado">—</strong>
+                    <ion-note *ngIf="resultado !== null">{{ num1 }} {{ obtenerSimboloOperacion(operacion) }} {{ num2 }}</ion-note>
+                    <ion-note *ngIf="resultado === null">Tu resultado aparecerá aquí</ion-note>
+                  </ion-card-content>
+                </ion-card>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
 
-    <div class="resultado" *ngIf="resultado !== null">
-      Resultado: <strong>{{ resultado }}</strong>
-    </div>
-  </div>
+          <ion-col size="12" sizeLg="4">
+            <ion-card class="historico">
+              <ion-card-header>
+                <div class="historico-titulo">
+                  <ion-card-title><ion-text color="success"><p class="eyebrow">Tu actividad</p></ion-text>Histórico</ion-card-title>
+                  <ion-button *ngIf="historico.length > 0" fill="clear" size="small" (click)="limpiarHistorico()" aria-label="Borrar histórico">Limpiar</ion-button>
+                </div>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list *ngIf="historico.length > 0">
+                  <ion-list-header>Operaciones recientes</ion-list-header>
+                  <ion-item *ngFor="let item of historico" lines="full">
+                    <ion-label>{{ item.num1 }} <b>{{ obtenerSimboloOperacion(item.operacion) }}</b> {{ item.num2 }}<ion-note>{{ item.fecha | date:'short' }}</ion-note></ion-label>
+                    <ion-note slot="end" class="valor-historico">{{ item.resultado }}</ion-note>
+                  </ion-item>
+                </ion-list>
+                <div *ngIf="historico.length === 0" class="vacio"><span>↗</span>Aún no hay cálculos.<small>Tu actividad aparecerá aquí.</small></div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </main>
+  </ion-content>
 
-  <div class="historico">
-    <div class="historico-titulo">
-      <h2>Histórico</h2>
-      <button *ngIf="historico.length > 0" (click)="limpiarHistorico()" class="limpiar-historico">
-        Borrar histórico
-      </button>
-    </div>
-
-    <p *ngIf="historico.length === 0" class="vacio">Aún no hay cálculos realizados.</p>
-
-    <ul *ngIf="historico.length > 0">
-      <li *ngFor="let item of historico">
-        {{ item.num1 }} {{ obtenerSimboloOperacion(item.operacion) }} {{ item.num2 }} = <strong>{{ item.resultado }}</strong>
-        <span class="fecha">{{ item.fecha | date:'short' }}</span>
-      </li>
-    </ul>
-  </div>
-</div>
+  <ion-footer class="app-footer">
+    <ion-toolbar>
+      <ion-title size="small">CALCULADORA SIMPLE</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="limpiarCampos()"><span>＋</span> Nueva operación</ion-button>
+        <ion-button color="danger" [disabled]="historico.length === 0" (click)="limpiarHistorico()"><span>⌫</span> Vaciar histórico</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+</ion-app>

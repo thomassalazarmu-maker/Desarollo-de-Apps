@@ -1,128 +1,56 @@
-.contenedor {
-  max-width: 480px;
-  margin: 40px auto;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  color: #2d2d2d;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.calculadora {
-  background: #f7f7f9;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.campo {
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.campo label {
-  font-size: 14px;
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.campo input,
-.campo select {
-  padding: 10px 12px;
-  border: 1px solid #d0d0d5;
-  border-radius: 8px;
-  font-size: 15px;
-}
-
-.botones {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #5b5bd6;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-button:hover {
-  background: #4747b8;
-}
-
-button.secundario {
-  background: #e2e2ea;
-  color: #333;
-}
-
-button.secundario:hover {
-  background: #d0d0da;
-}
-
-.resultado {
-  margin-top: 16px;
-  padding: 14px;
-  background: #eaeaff;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 17px;
-}
-
-.historico {
-  margin-top: 24px;
-}
-
-.historico-titulo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.limpiar-historico {
-  flex: none;
-  padding: 6px 12px;
-  font-size: 13px;
-  background: #ff5c5c;
-}
-
-.limpiar-historico:hover {
-  background: #e04a4a;
-}
-
-.vacio {
-  color: #888;
-  font-style: italic;
-}
-
-.historico ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.historico li {
-  background: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-}
-
-.historico .fecha {
-  color: #999;
-  font-size: 12px;
-}
+:host { --ink: #18201e; --muted: #73807b; --line: #dbe3de; --paper: #f5f8f4; --lime: #d9f45b; --teal: #164d49; display: block; min-height: 100%; color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+ion-app { background: var(--paper); }
+ion-toolbar { --background: rgba(245, 248, 244, .94); --color: var(--ink); --border-color: var(--line); }
+.app-header ion-title { font: 700 22px 'Trebuchet MS', sans-serif; letter-spacing: -1px; }
+.app-header ion-title > span:last-child { color: #8da822; }
+.marca-icono { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 5px; border-radius: 50%; background: var(--lime); color: var(--teal); font-size: 24px; line-height: 1; }
+.app-content { --background: var(--paper); }
+.contenedor { max-width: 1120px; margin: 0 auto; padding: 32px 24px 28px; }
+.bienvenida { padding: 70px 0 55px; }
+.eyebrow { margin: 0 0 10px; color: #8aa126; font: 700 11px 'Trebuchet MS', sans-serif; letter-spacing: 1.8px; text-transform: uppercase; }
+h1 { margin: 0 0 18px; font-size: clamp(42px, 6vw, 72px); font-weight: 400; letter-spacing: -3px; line-height: .98; }
+h1 em { color: var(--teal); font-style: italic; }
+.intro { max-width: 390px; margin: 0; color: var(--muted); font: 16px/1.6 'Trebuchet MS', sans-serif; }
+.garabato { color: #b8c6b2; font-size: 110px; font-style: italic; text-align: center; transform: rotate(-12deg); }
+.contenido { padding: 0; }
+.calculadora, .historico { --background: #fff; --color: var(--ink); margin: 0; border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 16px 35px rgba(33, 64, 45, .06); }
+ion-card-header { padding: 28px 28px 8px; }
+ion-card-title { color: var(--ink); font-size: 26px; font-weight: 400; letter-spacing: -.8px; }
+ion-card-title .eyebrow { display: block; font-size: 11px; }
+ion-card-content { padding: 20px 28px 28px; }
+.formulario { padding: 0; }
+.campo { --background: transparent; --padding-start: 0; --inner-padding-end: 0; --min-height: 78px; }
+.campo ion-label { color: #62716b !important; font: 700 11px 'Trebuchet MS', sans-serif !important; letter-spacing: 1px; text-transform: uppercase; }
+.campo ion-input, .campo ion-select { --background: #fbfdfb; --border-color: var(--line); --border-radius: 3px; --highlight-color: #8da822; margin-top: 8px; font: 20px Georgia, serif; }
+.campo ion-select { font-size: 16px; }
+.acciones { display: flex; gap: 12px; margin-top: 22px; }
+.acciones ion-button { margin: 0; font: 700 13px 'Trebuchet MS', sans-serif; }
+.boton-principal { flex: 1; --background: var(--teal); --background-hover: #21645e; --color: #fff; text-align: left; }
+.boton-principal span { margin-left: auto; font-size: 20px; }
+.boton-secundario { --border-color: var(--line); --color: #4a5b54; }
+.resultado { --background: var(--lime); --color: var(--teal); margin: 24px 0 0; box-shadow: none; }
+.resultado ion-card-content { position: relative; min-height: 110px; padding: 20px 24px; }
+.resultado-label { display: block; font: 700 11px 'Trebuchet MS', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; }
+.resultado strong { display: block; margin-top: 5px; font-size: 46px; font-weight: 400; letter-spacing: -2px; }
+.resultado ion-note { position: absolute; right: 24px; bottom: 22px; color: #55712b; font: 12px 'Trebuchet MS', sans-serif; }
+.resultado-vacio { --background: #f0f5cf; }
+.placeholder-resultado { color: #a9bb63; }
+.historico { min-height: 276px; box-shadow: none; }
+.historico ion-card-header { padding-bottom: 18px; }
+.historico-titulo { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.historico-titulo ion-button { margin: 0; --color: #899b2b; font-size: 11px; }
+.historico ion-list { padding: 0; background: transparent; }
+.historico ion-list-header { padding-inline: 0; color: var(--muted); font: 10px 'Trebuchet MS', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.historico ion-item { --padding-start: 0; --inner-padding-end: 0; --background: transparent; --border-color: #edf1ed; font: 17px Georgia, serif; }
+.historico ion-item ion-label ion-note { display: block; margin-top: 5px; color: #9aa59f; font: 10px 'Trebuchet MS', sans-serif; }
+.valor-historico { color: var(--teal); font: 20px Georgia, serif; }
+.vacio { padding: 40px 0 15px; color: var(--muted); font: 14px/1.7 'Trebuchet MS', sans-serif; }
+.vacio span, .vacio small { display: block; }
+.vacio span { margin-bottom: 12px; color: #a9ba59; font: 32px Georgia, serif; }
+.vacio small { color: #a6b0aa; font-size: 12px; }
+.app-footer ion-toolbar { --min-height: 62px; padding: 0 max(20px, calc((100% - 1072px) / 2)); }
+.app-footer ion-title { color: #a1aaa5; font: 10px 'Trebuchet MS', sans-serif; letter-spacing: 1.3px; }
+.app-footer ion-button { font: 10px 'Trebuchet MS', sans-serif; }
+.app-footer ion-button span { margin-right: 5px; color: #8da822; font-size: 15px; }
+@media (max-width: 760px) { .contenedor { padding-inline: 14px; } .bienvenida { padding: 55px 0 35px; } .garabato { display: none; } .operador-col { order: 3; } .app-footer ion-toolbar { padding: 6px 8px; } .app-footer ion-title { display: none; } }
+@media (max-width: 430px) { h1 { font-size: 43px; } ion-card-header, ion-card-content { padding-inline: 18px; } .acciones { flex-direction: column; } .boton-secundario { width: 100%; } .app-footer ion-button { --padding-start: 5px; --padding-end: 5px; font-size: 9px; } }

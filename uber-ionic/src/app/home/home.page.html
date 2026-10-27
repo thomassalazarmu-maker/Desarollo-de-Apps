@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar class="map-toolbar">
+    <ion-title class="brand-title">RUTA URBANA</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadDashboard()" aria-label="Actualizar"><ion-icon name="refresh-outline" slot="icon-only"></ion-icon></ion-button>
+      <ion-button *ngIf="user" (click)="logout()" aria-label="Cerrar sesión"><ion-icon name="log-out-outline" slot="icon-only"></ion-icon></ion-button>
+      <ion-button *ngIf="!user" class="account-button" (click)="openAuth()"><ion-icon name="person-outline" slot="start"></ion-icon>Ingresar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="page-shell" *ngIf="!user || user.role === 'client'">
+    <section class="map-screen">
+      <div id="ride-map" class="ride-map" aria-label="Mapa para elegir recogida y destino"></div>
+      <div class="map-topline"><span class="map-location"><ion-icon name="navigate-outline"></ion-icon> Bogotá, Colombia</span><button aria-label="Centrar mapa" (click)="fitRideBounds()"><ion-icon name="locate-outline"></ion-icon></button></div>
+      <div class="map-pick-controls" aria-label="Seleccionar punto del mapa">
+        <button [class.active]="picking === 'origin'" (click)="picking = 'origin'"><span class="pick-dot pickup-dot"></span> Elegir recogida</button>
+        <button [class.active]="picking === 'destination'" (click)="picking = 'destination'"><span class="pick-dot destination-dot"></span> Elegir destino</button>
+      </div>
+
+      <section class="booking-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-heading"><div><p class="eyebrow">VIAJE A TU MANERA</p><h1>¿A dónde vamos?</h1></div><span class="ride-category"><ion-icon name="car-sport-outline"></ion-icon></span></div>
+        <div class="route-inputs">
+          <div class="route-rail"><span class="rail-origin"></span><span class="rail-line"></span><span class="rail-destination"></span></div>
+          <div class="route-fields">
+            <div class="route-field"><ion-input label="Recogida" labelPlacement="stacked" name="pickup" [(ngModel)]="origin.name" (ionBlur)="findAddress('origin')" placeholder="Elige en el mapa o escribe dirección"></ion-input><button aria-label="Buscar recogida en mapa" (click)="picking = 'origin'"><ion-icon name="locate-outline"></ion-icon></button></div>
+            <div class="route-field"><ion-input label="Destino" labelPlacement="stacked" name="destination" [(ngModel)]="destination.name" (ionBlur)="findAddress('destination')" placeholder="¿A dónde quieres ir?"></ion-input><button aria-label="Buscar destino en mapa" (click)="picking = 'destination'"><ion-icon name="search-outline"></ion-icon></button></div>
+          </div>
+        </div>
+        <div class="sheet-hint"><ion-icon name="information-circle-outline"></ion-icon><span>Toca el mapa para ubicar {{ picking === 'origin' ? 'tu punto de recogida' : 'tu destino' }}.</span></div>
+        <div class="estimate" *ngIf="estimate"><div><span>{{ estimate.distance_km }} km · {{ estimate.duration_min }} min aprox.</span><strong>Estimación del viaje</strong></div><strong>{{ estimate.estimated_fare | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></div>
+        <div class="booking-actions">
+          <ion-button class="estimate-button" fill="outline" (click)="estimateFare()" [disabled]="busy">Ver tarifa</ion-button>
+          <ion-button class="request-button" (click)="user ? requestRide() : openAuth()" [disabled]="busy || !origin.name || !destination.name">{{ user ? 'Confirmar viaje' : 'Iniciar sesión para pedir' }}<ion-icon name="arrow-forward-outline" slot="end"></ion-icon></ion-button>
+        </div>
+        <div class="signed-in-line" *ngIf="user"><span>Conectado como {{ user.name }}</span><ion-button fill="clear" size="small" (click)="logout()">Salir</ion-button></div>
+      </section>
+
+      <div class="auth-backdrop" *ngIf="authOpen" (click)="authOpen = false" (keydown.escape)="authOpen = false" tabindex="0">
+        <section class="auth-panel" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+          <button class="auth-close" aria-label="Cerrar" (click)="authOpen = false"><ion-icon name="close-outline"></ion-icon></button>
+          <div class="auth-tabs"><button [class.selected]="mode === 'login'" (click)="mode = 'login'">Ingresar</button><button [class.selected]="mode === 'register'" (click)="mode = 'register'">Crear cuenta</button></div>
+          <form *ngIf="mode === 'login' && !showForgotPassword" (ngSubmit)="submitAuth()">
+            <h2>Qué bueno verte.</h2><p class="muted">Inicia sesión para continuar con tu viaje.</p>
+            <div class="notice" *ngIf="message" [class.error]="isError" role="status">{{ message }}</div>
+            <ion-item><ion-input label="Correo o teléfono" labelPlacement="stacked" name="login" [(ngModel)]="loginForm.login" autocomplete="username" required></ion-input></ion-item>
+            <ion-item><ion-input label="Contraseña" labelPlacement="stacked" name="password" [(ngModel)]="loginForm.password" type="password" autocomplete="current-password" required></ion-input></ion-item>
+            <ion-button expand="block" type="submit" [disabled]="busy">{{ busy ? 'Conectando…' : 'Iniciar sesión' }}</ion-button>
+            <ion-button fill="clear" size="small" (click)="showForgotPassword = true">Olvidé mi contraseña</ion-button>
+          </form>
+          <form *ngIf="mode === 'login' && showForgotPassword" (ngSubmit)="resetPassword()">
+            <h2>Restablecer contraseña.</h2><p class="muted">Ingresa tu correo y la nueva contraseña.</p>
+            <ion-item><ion-input label="Correo electrónico" labelPlacement="stacked" name="recovery-email" [(ngModel)]="recovery.email" type="email" required></ion-input></ion-item>
+            <ion-item><ion-input label="Nueva contraseña" labelPlacement="stacked" name="recovery-password" [(ngModel)]="recovery.new_password" type="password" required></ion-input></ion-item>
+            <ion-button expand="block" type="submit" [disabled]="busy">Restablecer</ion-button><ion-button fill="clear" size="small" (click)="showForgotPassword = false">Volver</ion-button>
+          </form>
+          <form *ngIf="mode === 'register'" (ngSubmit)="submitAuth()">
+            <h2>Crear cuenta.</h2><p class="muted">Regístrate para confirmar tu viaje.</p>
+            <div class="form-grid"><ion-item><ion-input label="Nombre completo" labelPlacement="stacked" name="name" [(ngModel)]="registerForm.name" required></ion-input></ion-item><ion-item><ion-input label="Correo electrónico" labelPlacement="stacked" name="email" [(ngModel)]="registerForm.email" type="email" required></ion-input></ion-item><ion-item><ion-input label="Teléfono" labelPlacement="stacked" name="phone" [(ngModel)]="registerForm.phone" required></ion-input></ion-item><ion-item><ion-input label="Contraseña" labelPlacement="stacked" name="new-password" [(ngModel)]="registerForm.password" type="password" required></ion-input></ion-item></div>
+            <ion-item><ion-select label="Tipo de cuenta" labelPlacement="stacked" name="role" [(ngModel)]="registerForm.role"><ion-select-option value="client">Cliente</ion-select-option><ion-select-option value="driver">Conductor</ion-select-option></ion-select></ion-item>
+            <div class="form-grid driver-fields" *ngIf="registerForm.role === 'driver'"><ion-item><ion-input label="Número de licencia" labelPlacement="stacked" name="license" [(ngModel)]="registerForm.license_number" required></ion-input></ion-item><ion-item><ion-input label="Placa" labelPlacement="stacked" name="plate" [(ngModel)]="registerForm.plate" required></ion-input></ion-item><ion-item><ion-input label="Marca" labelPlacement="stacked" name="brand" [(ngModel)]="registerForm.brand" required></ion-input></ion-item><ion-item><ion-input label="Modelo" labelPlacement="stacked" name="model" [(ngModel)]="registerForm.model" required></ion-input></ion-item><ion-item><ion-input label="Año" labelPlacement="stacked" name="year" [(ngModel)]="registerForm.year" type="number" required></ion-input></ion-item><ion-item><ion-input label="Color" labelPlacement="stacked" name="color" [(ngModel)]="registerForm.color" required></ion-input></ion-item></div>
+            <ion-button expand="block" type="submit" [disabled]="busy">Crear cuenta</ion-button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <main class="page-shell" *ngIf="user && user.role !== 'client'">
+    <section class="dashboard">
+      <div class="dashboard-heading">
+        <div><p class="eyebrow">{{ user.role === 'client' ? 'ESPACIO DEL CLIENTE' : user.role === 'driver' ? 'ESPACIO DEL CONDUCTOR' : 'CENTRO DE CONTROL' }}</p><h1>Hola, {{ user.name }}.</h1></div>
+        <span class="role-chip">{{ user.role }}</span>
+      </div>
+
+      <section class="notice" *ngIf="message" [class.error]="isError" role="status">{{ message }}</section>
+
+      <ng-container *ngIf="user.role === 'driver'">
+        <section class="driver-top panel"><div><p class="eyebrow">DISPONIBILIDAD</p><h2>{{ availability === 'available' ? 'Estás en línea' : 'Estás desconectado' }}</h2><p class="muted">{{ availability === 'available' ? 'Puedes recibir solicitudes de viaje.' : 'Conéctate cuando estés listo para conducir.' }}</p></div><ion-button [color]="availability === 'available' ? 'medium' : 'success'" (click)="setAvailability()">{{ availability === 'available' ? 'Desconectarme' : 'Conectarme' }}</ion-button></section>
+        <section class="panel current-trip" *ngIf="currentTrip"><div class="panel-heading"><div><p class="eyebrow">SERVICIO ACEPTADO</p><h2>Viaje #{{ currentTrip.id }}</h2></div><span class="role-chip">{{ currentTrip.status }}</span></div><div class="coordinate-grid"><ion-item><ion-input label="Distancia real (km)" labelPlacement="stacked" type="number" min="0" step="0.1" [(ngModel)]="actualDistance"></ion-input></ion-item><ion-item><ion-input label="Duración real (min)" labelPlacement="stacked" type="number" min="0" [(ngModel)]="actualDuration"></ion-input></ion-item></div><div class="action-row"><ion-button fill="outline" (click)="driverAction(currentTrip.id, 'arrive')">Llegué</ion-button><ion-button fill="outline" (click)="driverAction(currentTrip.id, 'start')">Iniciar viaje</ion-button><ion-button (click)="driverAction(currentTrip.id, 'complete')">Finalizar</ion-button></div></section>
+        <section class="panel request-list"><div class="panel-heading"><div><p class="eyebrow">SERVICIOS DISPONIBLES</p><h2>Solicitudes cercanas</h2></div><ion-button fill="clear" (click)="loadRequests()" aria-label="Actualizar solicitudes"><ion-icon name="refresh-outline"></ion-icon></ion-button></div><article class="request-row" *ngFor="let request of requests"><div><strong>{{ request.origin_name }} <ion-icon name="arrow-forward-outline"></ion-icon> {{ request.destination_name }}</strong><small>{{ request.estimated_distance_km }} km · {{ request.client?.name }}</small></div><div class="request-action"><strong>{{ request.estimated_fare | currency:'COP':'symbol-narrow':'1.0-0' }}</strong><ion-button size="small" (click)="acceptRequest(request.id)" [disabled]="!!currentTrip">Aceptar</ion-button></div></article><p class="muted" *ngIf="!requests.length">No hay solicitudes pendientes por ahora.</p></section>
+      </ng-container>
+
+      <ng-container *ngIf="user.role === 'admin'">
+        <section class="stats-grid" *ngIf="adminStats"><article class="stat panel"><span>Clientes</span><strong>{{ adminStats.total_clients }}</strong></article><article class="stat panel"><span>Conductores</span><strong>{{ adminStats.total_drivers }}</strong></article><article class="stat panel"><span>Viajes activos</span><strong>{{ adminStats.active_trips }}</strong></article><article class="stat panel"><span>Ingresos</span><strong>{{ adminStats.total_revenue | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></article></section>
+        <section class="panel admin-drivers"><div class="panel-heading"><div><p class="eyebrow">GESTIÓN DE CONDUCTORES</p><h2>Revisión de cuentas</h2></div><ion-button fill="clear" (click)="loadAdminDrivers()" aria-label="Actualizar conductores"><ion-icon name="refresh-outline"></ion-icon></ion-button></div><article class="request-row" *ngFor="let driver of adminDrivers"><div><strong>{{ driver.user?.name }}</strong><small>{{ driver.license_number }} · {{ driver.approval_status }}</small></div><ion-button size="small" *ngIf="driver.approval_status === 'pending'" (click)="approveDriver(driver.id)">Aprobar</ion-button></article></section>
+      </ng-container>
+    </section>
+    <footer><span>RUTA URBANA</span><span>Plataforma de movilidad · Colombia</span></footer>
+  </main>
+</ion-content>

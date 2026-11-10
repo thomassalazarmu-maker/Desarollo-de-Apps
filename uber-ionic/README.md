@@ -1,6 +1,6 @@
-# Ruta Urbana - Ionic Angular
+# Huila Go - Ionic Angular
 
-Frontend Ionic Angular para la API descrita en `../API_DOCUMENTATION.md`.
+Frontend Ionic Angular para la plataforma de viajes. El acceso, registro, aprobación de conductores y datos de dashboards de esta entrega son simulados en el navegador; no se envían credenciales ni documentos a un backend.
 
 ## Ejecutar en desarrollo
 
@@ -10,20 +10,30 @@ npm install
 npm start
 ```
 
-Abre `http://localhost:4200`. La URL base de la API está configurada en `src/environments/environment.ts` como `http://20.20.1.157:8000/api`.
+Abre `http://localhost:4200` y elige Pasajero, Conductor o Administrador.
 
-## Conexión desde teléfono
+## Cuentas demo
 
-El teléfono debe poder alcanzar la IP del servidor, normalmente estando en la misma red. El backend debe escuchar conexiones de red (no solamente `127.0.0.1`), permitir el puerto `8000` en el firewall y habilitar CORS para el origen del frontend (`http://localhost:4200` en desarrollo). Si se publica con HTTPS, la API también debe usar HTTPS; los navegadores bloquean peticiones HTTP desde una página HTTPS.
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Pasajero | `pasajero@rutaurbana.demo` | `Rider123!` |
+| Conductor aprobado | `conductor@rutaurbana.demo` | `Driver123!` |
+| Administrador | `admin@rutaurbana.demo` | `Admin123!` |
 
-## Funciones conectadas
+Los datos se guardan en `localStorage` del navegador. La recuperación de contraseña solo cambia la contraseña local. Las cargas del conductor guardan el nombre del archivo, no transfieren el documento. El login de Google es únicamente visual.
 
-- Autenticación, registro de cliente/conductor, recuperación de contraseña y sesión JWT.
-- Cliente: estimar tarifa, solicitar/cancelar viaje, consultar servicio activo e historial y calificar viajes.
-- Conductor: disponibilidad, solicitudes pendientes, aceptar servicio y marcar llegada, inicio y finalización.
-- Administrador: indicadores y aprobación de conductores.
+## Probar en teléfono
 
-La documentación no define un endpoint de streaming/notificaciones para seguimiento en tiempo real ni un proveedor de mapas. La ubicación se muestra solo si viene en la respuesta de viaje activo; para navegación/selección visual de lugares hace falta integrar un proveedor de mapas y completar el contrato del backend. El servicio de finalización recibe distancia y duración ingresadas por el conductor, tal como pide la API.
+Inicia el servidor de desarrollo con `npm start -- --host 0.0.0.0` y abre desde el teléfono la dirección de red que muestre Ionic. El teléfono y el computador deben estar en la misma red Wi-Fi. El mapa y la búsqueda de direcciones necesitan conexión a internet; la autenticación y los dashboards funcionan localmente sin backend.
+
+## Flujos de demostración
+
+- Acceso por rol, registro de pasajero/conductor, recuperación local y sesión persistida.
+- Pasajero: estimación, solicitud/cancelación y viajes de muestra.
+- Conductor: solicitud pendiente, disponibilidad, aceptación y avance de viajes de muestra; el acceso a viajes requiere aprobación.
+- Administrador: indicadores demo y aprobación/rechazo local de conductores.
+
+La especificación de la API está en `../API_DOCUMENTATION.md`. El servicio HTTP y la URL de API se conservan para una futura integración; estos flujos demo no hacen peticiones a la API.
 
 La pantalla de reserva usa Leaflet con cartografía de OpenStreetMap. Se puede seleccionar origen/destino tocando el mapa o arrastrando los marcadores; al escribir una dirección intenta ubicarla usando Nominatim.
 

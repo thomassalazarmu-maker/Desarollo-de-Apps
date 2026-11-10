@@ -26,7 +26,10 @@
 @import "@ionic/angular/css/flex-utils.css";
 @import "leaflet/dist/leaflet.css";
 
-body { --ion-font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; --ion-color-primary: #245c46; --ion-color-primary-rgb: 36, 92, 70; --ion-color-primary-contrast: #ffffff; --ion-color-success: #245c46; --ion-background-color: #f4f6f1; }
+body { --ion-font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; --ion-color-primary: #245c46; --ion-color-primary-rgb: 36, 92, 70; --ion-color-primary-contrast: #ffffff; --ion-color-success: #245c46; --ion-background-color: #f4f6f1; --ion-text-color: #172722; --ion-item-color: #172722; }
+
+ion-input, ion-textarea, ion-select { --color: #172722; --placeholder-color: #707a72; }
+ion-item { --color: #172722; }
 
 .map-marker-wrapper { border: 0; background: transparent; }
 .map-pin { display: block; width: 22px; height: 22px; border: 4px solid white; border-radius: 50%; box-shadow: 0 2px 8px #0005; }
